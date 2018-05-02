@@ -52,9 +52,7 @@ cc.Class({
        
         setTimeout(function () {
             if (ws.readyState === WebSocket.OPEN) {
-                // var data = {"cmd_id":1000, "data":666};
-                // var datastr = JSON.stringify(data);
-                // ws.send(datastr);
+                common.socket = ws;
             }
             else {
                 console.log("WebSocket instance wasn't ready...");
@@ -71,7 +69,7 @@ cc.Class({
     onClickLogin() {
         var str = this.nameInput.string;
         var login_data = {"name":str, "password":123456};
-        var data = {"cmd_id":1000, "data":JSON.stringify(login_data)};
+        var data = {"cmd_id":common.CMD_ID_LOGIN, "data":JSON.stringify(login_data)};
 
         var senddata = JSON.stringify(data);
         this.ws.send(senddata);

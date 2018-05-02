@@ -29,7 +29,13 @@ cc.Class({
     },
  
     onClickCreateRoom() {
+        var data = {"cmd_id":common.CMD_ID_CREATE_FKROOM, "data":null};
 
+        var senddata = JSON.stringify(data);
+        if(common.socket && common.socket != null) {
+            common.socket.send(senddata);
+        }
+        
     },
 
     onClickJoinRoom(){
