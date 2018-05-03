@@ -1,4 +1,5 @@
 var common = require("common");
+var hall = require("hall")
 cc.Class({
     extends: cc.Component,
 
@@ -35,11 +36,12 @@ cc.Class({
             var data = JSON.parse(datastr);
             //self.label.string = data.data;
 
-            var logindata = JSON.parse(data.data);
+            var jsondata = JSON.parse(data.data);
 
-            if(data.cmd_id == 1000 && logindata.name != null && logindata.name != "")
+            if(data.cmd_id == 1000 && jsondata.name != null && jsondata.name != "")
             {
-                common.username = logindata.name;
+                common.username = jsondata.name;
+                common.uid = jsondata.uid;
                 cc.director.loadScene("hall");
             }
         };
