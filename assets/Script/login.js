@@ -1,5 +1,7 @@
 var common = require("common");
 var hall = require("hall")
+var net = require("net")
+
 cc.Class({
     extends: cc.Component,
 
@@ -19,23 +21,11 @@ cc.Class({
 
     // use this for initialization
     onLoad: function () {
-        this.label.string = "666666";//this.text;
-
         var self = this;
 
-        var ws = new WebSocket("ws://localhost:8001");
-
-        this.ws = ws;
-        ws.onopen = function (event) {
-            console.log("Send Text WS was opened.");
-        };
-        ws.onmessage = function (event) {
-            //console.log("response text msg: " + event.data);
-
+        var onmessage = function (event) {
             var datastr = event.data;
             var data = JSON.parse(datastr);
-            //self.label.string = data.data;
-
             var jsondata = JSON.parse(data.data);
 
             if(data.cmd_id == 1000 && jsondata.name != null && jsondata.name != "")
@@ -45,21 +35,45 @@ cc.Class({
                 cc.director.loadScene("hall");
             }
         };
-        ws.onerror = function (event) {
-            console.log("Send Text fired an error");
-        };
-        ws.onclose = function (event) {
-            console.log("WebSocket instance closed.");
-        };
+
+        net.connect();
+        if(common.socket) {
+            common.socket.onmessage = onmessage;
+        }
+
+        // var ws = new WebSocket("ws://localhost:8001");
+
+        // this.ws = ws;
+        // ws.onopen = function (event) {
+        //     console.log("Send Text WS was opened.");
+        // };
+        // ws.onmessage = function (event) {
+        //     var datastr = event.data;
+        //     var data = JSON.parse(datastr);
+        //     var jsondata = JSON.parse(data.data);
+
+        //     if(data.cmd_id == 1000 && jsondata.name != null && jsondata.name != "")
+        //     {
+        //         common.username = jsondata.name;
+        //         common.uid = jsondata.uid;
+        //         cc.director.loadScene("hall");
+        //     }
+        // };
+        // ws.onerror = function (event) {
+        //     console.log("Send Text fired an error");
+        // };
+        // ws.onclose = function (event) {
+        //     console.log("WebSocket instance closed.");
+        // };
        
-        setTimeout(function () {
-            if (ws.readyState === WebSocket.OPEN) {
-                common.socket = ws;
-            }
-            else {
-                console.log("WebSocket instance wasn't ready...");
-            }
-        }, 1);
+        // setTimeout(function () {
+        //     if (ws.readyState === WebSocket.OPEN) {
+        //         common.socket = ws;
+        //     }
+        //     else {
+        //         console.log("WebSocket instance wasn't ready...");
+        //     }
+        // }, 1);
 
     },
 
@@ -74,7 +88,11 @@ cc.Class({
         var data = {"cmd_id":common.CMD_ID_LOGIN, "data":JSON.stringify(login_data)};
 
         var senddata = JSON.stringify(data);
-        this.ws.send(senddata);
+
+        net.check();
+        if(common.socket) {
+            common.socket.send(senddata);
+        }
     }
  
 });
