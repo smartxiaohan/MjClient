@@ -98,6 +98,13 @@ cc.Class({
         common.tablestatus = data.status;
 
         common.tableplayers = data.players;
+         //确定mychairno  
+         for(var i=0; i<common.tableplayers.length; i++) {
+            var player = common.tableplayers[i];
+            if(player && player.uid == common.uid) {
+                common.mychairno = player.chairno;
+            }
+        }
 
         this.labelRoomNum.string = data.tablenum;
 

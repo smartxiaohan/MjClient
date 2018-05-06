@@ -40,41 +40,6 @@ cc.Class({
         if(common.socket) {
             common.socket.onmessage = onmessage;
         }
-
-        // var ws = new WebSocket("ws://localhost:8001");
-
-        // this.ws = ws;
-        // ws.onopen = function (event) {
-        //     console.log("Send Text WS was opened.");
-        // };
-        // ws.onmessage = function (event) {
-        //     var datastr = event.data;
-        //     var data = JSON.parse(datastr);
-        //     var jsondata = JSON.parse(data.data);
-
-        //     if(data.cmd_id == 1000 && jsondata.name != null && jsondata.name != "")
-        //     {
-        //         common.username = jsondata.name;
-        //         common.uid = jsondata.uid;
-        //         cc.director.loadScene("hall");
-        //     }
-        // };
-        // ws.onerror = function (event) {
-        //     console.log("Send Text fired an error");
-        // };
-        // ws.onclose = function (event) {
-        //     console.log("WebSocket instance closed.");
-        // };
-       
-        // setTimeout(function () {
-        //     if (ws.readyState === WebSocket.OPEN) {
-        //         common.socket = ws;
-        //     }
-        //     else {
-        //         console.log("WebSocket instance wasn't ready...");
-        //     }
-        // }, 1);
-
     },
 
     // called every frame

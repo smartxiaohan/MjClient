@@ -36,39 +36,56 @@ cc.Class({
 
         this.freshPlayers();
         
-
         var self = this;
- 
+
         if (common.socket)
         {
-            common.socket.onmessage = function (event) 
-            {
-                var datastr = event.data;
-                var data = JSON.parse(datastr);
- 
-                var jsondata = JSON.parse(data.data);
-    
-     
+            common.socket.onmessage = function (event) {
+                self.onmessage(event, self)
             };
         }
         
     },
+
+    onmessage: function (event,self) {
+        var datastr = event.data;
+        var data = JSON.parse(datastr);
+        var jsondata = JSON.parse(data.data);
+ 
+        if(data.cmd_id == common.CMD_ID_JOIN_FKROOM)
+        {
+            self.onNotifyJoinRoom(jsondata);
+        }
+    },
+
+    onNotifyJoinRoom: function(data) {
+      
+        common.tableplayers = data.players;
+
+      
+        this.freshPlayers();
+    },
+
 
     // called every frame
     update: function (dt) {
 
     },
 
+    onBtnQuit: function() {
+        cc.director.loadScene("hall");
+    },
+
     
     getNextChairNO: function(chair) {
         var totalChairs = 4;
-        return (chair - 1 + totalChairs) % totalChairs
+        return (chair + 1 + totalChairs) % totalChairs
     },
  
 
     getNextDrawIndex: function(drawIndex) {
         var totalChairs = 4;
-        var nextDrawIndex =(drawIndex - 1 + totalChairs) % totalChairs
+        var nextDrawIndex =(drawIndex + 1 + totalChairs) % totalChairs
         if(0 == nextDrawIndex) {
             nextDrawIndex = totalChairs
         }  
