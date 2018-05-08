@@ -10,9 +10,9 @@ cc.Class({
             type: cc.Label
         },
 
-        label_username: {
-            default: null,
-            type: cc.Label
+        textureURL: {
+            default: "",
+            url: cc.Texture2D
         },
        
     },
@@ -23,9 +23,9 @@ cc.Class({
             this.label_tablenum.string = "房号 " + common.tablenum; 
         }
 
-        if(common.username && common.username != ""){
-            this.label_username.string = common.username; 
-        }
+        // if(common.username && common.username != ""){
+        //     this.label_username.string = common.username; 
+        // }
 
         this.initView();
        
@@ -43,7 +43,7 @@ cc.Class({
     },
 
     initView: function() {
-        for(var i=2; i<=4; i++) {
+        for(var i=1; i<=4; i++) {
             var player = this.node.getChildByName("player"+i.toString());
             if(player) {
                 player.active = false
@@ -52,15 +52,19 @@ cc.Class({
 
         var card_layer = this.node.getChildByName("card_layer");
         if(card_layer) {
-            var hand1 = card_layer.getChildByName("hand1");
-            if(hand1) {
-                for(var i=0; i<14; i++) {
-                    var node = hand1.getChildByName("node"+(i+1).toString());
-                    if(node) {
-                        node.active = false;
+            for(var i=1; i<=4; i++) 
+            {
+                var hand = card_layer.getChildByName("hand"+i.toString());
+                if(hand) {
+                    for(var j=0; j<14; j++) {
+                        var node = hand.getChildByName("node"+(j+1).toString());
+                        if(node) {
+                            node.active = false;
+                        }
                     }
                 }
             }
+           
         }
 
        
@@ -79,9 +83,18 @@ cc.Class({
         {
             self.onNotifyPlayerStart(jsondata);
         }
+        else if(data.cmd_id == common.CMD_ID_TABLEINFO) {
+            self.onNotifyTableinfo(jsondata);
+        }
     },
 
     onNotifyJoinRoom: function(data) {
+        common.tableplayers = data.players;
+
+        this.freshPlayers();
+    },
+
+    onNotifyTableinfo: function(data) {
         common.tableplayers = data.players;
 
         this.freshPlayers();
@@ -100,19 +113,17 @@ cc.Class({
                 }
             }
         }
-        else {
-            var drawIndex = this.getDrawIndexByChairNO(chairno);
-            if(drawIndex >= 1 && drawIndex <=4) {
-                var player = this.node.getChildByName("player"+drawIndex.toString());
-                if(player) {
-                    var text_ready = player.getChildByName("text_ready");
-                    if(text_ready) {
-                        text_ready.active = true;
-                    }
-                } 
-            }
-        }
 
+        var drawIndex = this.getDrawIndexByChairNO(chairno);
+        if(drawIndex >= 1 && drawIndex <=4) {
+            var player = this.node.getChildByName("player"+drawIndex.toString());
+            if(player) {
+                var text_ready = player.getChildByName("text_ready");
+                if(text_ready) {
+                    text_ready.active = true;
+                }
+            } 
+        }
 
     },
 
@@ -175,23 +186,80 @@ cc.Class({
     freshPlayers: function() {
         for(var i=0; i<common.tableplayers.length; i++) {
             var player = common.tableplayers[i];
-            if(player.uid != common.uid) {
-                var drawIndex = this.getDrawIndexByChairNO(player.chairno)
-                var playernode = this.node.getChildByName("player"+drawIndex.toString())
-                if(playernode) {
-                    playernode.active = true;
+        
+            var drawIndex = this.getDrawIndexByChairNO(player.chairno)
 
-                    var label_username = playernode.getChildByName("label_username");
-                    if(label_username) {
-                        label_username.getComponent(cc.Label).string = player.username;
+            if(player.chairno == common.chairno) {
+                var node_start = this.node.getChildByName("node_start");
+                if(node_start) {
+                    var btn_ready = node_start.getChildByName("button");
+            
+                    if(btn_ready) {
+                        if(player.ready == true) {
+                            btn_ready.active = false;
+                        }
+                        else
+                        {
+                            btn_ready.active = true;
+                        }
                     }
+                } 
 
-                    var text_ready = playernode.getChildByName("text_ready");
-                    if(text_ready) {
-                        text_ready.active = false;
+                var handcards = player.handcards;
+                if(handcards && handcards.length > 0) {
+                    //self handcard
+                    var card_layer = this.node.getChildByName("card_layer");
+                    if(card_layer) {
+                         
+                        var selfhand = card_layer.getChildByName("hand1");
+                        if(selfhand) {
+                            for(var j=0; j<handcards.length; j++) {
+                                var node = selfhand.getChildByName("node"+(j+1).toString());
+                                if(node) {
+                                    node.active = true;
+
+                                    var node_handcard1 = node.getChildByName("node_handcard1");
+                                    if(node_handcard1) {
+                                        var flower = node_handcard1.getChildByName("flower");
+                                        var back = node_handcard1.getChildByName("back");
+                                        var joker = node_handcard1.getChildByName("joker");
+                                        var mask = node_handcard1.getChildByName("mask");
+
+                                        if(flower) {
+                                            //flower.getComponent(cc.Sprite).("Texure/card/flower/0.png");
+                                            var spf = flower.getComponent(cc.Sprite).spriteFrame;
+                                            //spf.setTexture(this.textureURL); //("res/raw-assets/Texture/card/flower/0.png");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                         
                     }
                 }
             }
+
+            var playernode = this.node.getChildByName("player"+drawIndex.toString())
+            if(playernode) {
+                playernode.active = true;
+
+                var label_username = playernode.getChildByName("label_username");
+                if(label_username) {
+                    label_username.getComponent(cc.Label).string = player.username;
+                }
+
+                var text_ready = playernode.getChildByName("text_ready");
+                if(text_ready) {
+                    if(player.ready == true) {
+                        text_ready.active = true;
+                    }
+                    else {
+                        text_ready.active = false;
+                    }
+                    
+                }
+            }
+             
         }
     }
 });
