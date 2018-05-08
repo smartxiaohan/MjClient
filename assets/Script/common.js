@@ -1,7 +1,7 @@
 module.exports = {
     username: null,
     uid:-1,
-    mychairno:-1,
+    chairno:-1,
   
 	socket: null,
     tablenum: -1,

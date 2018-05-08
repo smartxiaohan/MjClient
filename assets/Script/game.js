@@ -101,13 +101,13 @@ cc.Class({
             }
         }
         else {
-            var drawIndex = this.getDrawIndexByChairNO(player.chairno);
+            var drawIndex = this.getDrawIndexByChairNO(chairno);
             if(drawIndex >= 1 && drawIndex <=4) {
                 var player = this.node.getChildByName("player"+drawIndex.toString());
                 if(player) {
                     var text_ready = player.getChildByName("text_ready");
                     if(text_ready) {
-                        text_read.active = true;
+                        text_ready.active = true;
                     }
                 } 
             }
@@ -156,9 +156,9 @@ cc.Class({
     },
 
  
-    getDrawIndexByChairNO(chairno) {
+    getDrawIndexByChairNO: function(chairno) {
         var tmpIndex = 1;  //from mydrawindex
-        var tmpChair = common.mychairno;
+        var tmpChair = common.chairno;
     
         for(var i = 1;i<=4;i++)  {
             if(tmpChair == chairno)
@@ -188,7 +188,7 @@ cc.Class({
 
                     var text_ready = playernode.getChildByName("text_ready");
                     if(text_ready) {
-                        text_read.active = false;
+                        text_ready.active = false;
                     }
                 }
             }

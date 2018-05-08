@@ -102,7 +102,7 @@ cc.Class({
          for(var i=0; i<common.tableplayers.length; i++) {
             var player = common.tableplayers[i];
             if(player && player.uid == common.uid) {
-                common.mychairno = player.chairno;
+                common.chairno = player.chairno;
             }
         }
 
@@ -122,7 +122,7 @@ cc.Class({
         for(var i=0; i<common.tableplayers.length; i++) {
             var player = common.tableplayers[i];
             if(player && player.uid == common.uid) {
-                common.mychairno = player.chairno;
+                common.chairno = player.chairno;
             }
         }
 
