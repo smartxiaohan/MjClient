@@ -39,12 +39,17 @@ cc.Class({
                 common.uid = jsondata.uid;
                 cc.director.loadScene("hall");
             }
+            else if(data.cmd_id == common.CMD_ID_TABLEINFO) {
+                var jjj = 0;
+            }
         };
 
         net.connect();
         if(common.socket) {
             common.socket.onmessage = onmessage;
         }
+
+        cc.director.setDisplayStats(false);
 
         cc.loader.loadResDir("card", function (err, assets) {
             self.onLoadComplete(self, assets);

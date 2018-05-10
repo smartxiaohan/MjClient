@@ -55,6 +55,40 @@ cc.Class({
         {
             self.onNotifyJoinRoom(jsondata);
         }
+
+        if(data.cmd_id == common.CMD_ID_TABLEINFO) {
+            self.noNotifyTableInfo(jsondata)
+        }
+    },
+
+    noNotifyTableInfo: function(jsondata) {
+        if(jsondata.banker) {
+            common.banker = jsondata.banker;
+        }
+
+        if(jsondata.curplayer) {
+            common.curplayerchairno = jsondata.curplayer;
+        }
+
+        if(jsondata.host) {
+            common.tablehost = jsondata.host;
+        }
+
+        if(jsondata.tablenum) {
+            common.tablenum = jsondata.tablenum;
+        }
+
+        common.tableplayers = jsondata.players;
+
+         //确定mychairno  
+         for(var i=0; i<common.tableplayers.length; i++) {
+            var player = common.tableplayers[i];
+            if(player && player.uid == common.uid) {
+                common.chairno = player.chairno;
+            }
+        }
+
+        cc.director.loadScene("game");
     },
 
     // called every frame
@@ -117,6 +151,10 @@ cc.Class({
         common.tablestatus = data.status;
 
         common.tableplayers = data.players;
+
+        if(data.curplayer >= 0) {
+            common.curplayerchairno = data.curplayer;
+        }
 
         //确定mychairno  
         for(var i=0; i<common.tableplayers.length; i++) {

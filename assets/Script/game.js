@@ -95,12 +95,20 @@ cc.Class({
 
     onNotifyJoinRoom: function(data) {
         common.tableplayers = data.players;
+        if(data.curplayer) {
+            common.curplayerchairno = data.curplayer;
+        }
 
+        
         this.freshPlayers();
     },
 
     onNotifyTableinfo: function(data) {
         common.tableplayers = data.players;
+
+        if(data.curplayer) {
+            common.curplayerchairno = data.curplayer;
+        }
 
         this.freshPlayers();
     },
@@ -323,9 +331,14 @@ cc.Class({
                          
                         var selfhand = card_layer.getChildByName("hand1");
                         if(selfhand) {
-                            for(var j=0; j<=handcards.length; j++) {
-                                var node = selfhand.getChildByName("node"+(j+1).toString());
-                                var cardid = handcards[j];
+                            var startidx = 2;
+                            if(common.curplayerchairno == common.chairno) {
+                                startidx = 1;
+                            }
+                            for(var j=1; j<=handcards.length; j++) {
+                                var nodeidx = startidx + j - 1;
+                                var node = selfhand.getChildByName("node"+nodeidx.toString());
+                                var cardid = handcards[j-1];
                                 if(node) {
                                     node.active = true;
 
@@ -370,8 +383,13 @@ cc.Class({
                     if(card_layer) {
                         var hand = card_layer.getChildByName("hand"+drawIndex.toString());
                         if(hand) {
-                            for(var j=0; j<handcards.length; j++) {
-                                var node = hand.getChildByName("node"+(14-j).toString());
+                            var startidx = 2;
+                            if(common.curplayerchairno == player.chairno) {
+                                startidx = 1;
+                            }
+                            for(var j=1; j<=handcards.length; j++) {
+                                var nodeidx = startidx + j - 1;
+                                var node = hand.getChildByName("node"+nodeidx.toString());
                                 if(node) {
                                     node.active = true;
                                 }
