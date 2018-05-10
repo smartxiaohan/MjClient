@@ -39,8 +39,13 @@ cc.Class({
                 self.onmessage(event, self)
             };
         }
+
+        // cc.loader.loadResDir("card", function (err, assets) {
+        //     self.onLoadComplete(self, assets);
+        // });    
         
     },
+ 
 
     initView: function() {
         for(var i=1; i<=4; i++) {
@@ -56,7 +61,7 @@ cc.Class({
             {
                 var hand = card_layer.getChildByName("hand"+i.toString());
                 if(hand) {
-                    for(var j=0; j<14; j++) {
+                    for(var j=0; j<=14; j++) {
                         var node = hand.getChildByName("node"+(j+1).toString());
                         if(node) {
                             node.active = false;
@@ -150,6 +155,33 @@ cc.Class({
         cc.director.loadScene("hall");
     },
 
+    onClickCard: function(event) {
+        var event = event;
+
+        if(event.target.parent.y == 0) {
+            event.target.parent.y = 15;
+        }
+        else
+        {
+            var node = event.target.parent;
+            node.y = 0;
+
+            net.check();
+            if(node.cardid && common.socket != null) {
+                if(common.socket) {
+                    var outcarddata = {};
+                    outcarddata.chairno = common.chairno;
+                    outcarddata.tablenum = common.tablenum;
+                    outcarddata.cardid = node.cardid;
+                    var data = {"cmd_id":common.CMD_ID_OUTCARD, "data":JSON.stringify(outcarddata)};
+            
+                    var senddata = JSON.stringify(data);
+                    common.socket.send(senddata);
+                }
+            }
+        }
+    },
+
     
     getNextChairNO: function(chair) {
         var totalChairs = 4;
@@ -182,6 +214,84 @@ cc.Class({
            
         return tmpIndex
     },
+
+    getFlowerTexture: function(cardid) {
+        var idx = this.getCardResIndex(cardid);
+        var urlstr = "resources/card/flower/" + idx.toString() + ".png";
+        //var  realUrl = cc.url.raw("resources/card/flower/20.png");
+        //return realUrl;
+        //var texture = cc.textureCache.addImage(urlstr);
+        return cc.url.raw(urlstr);
+    },
+
+    
+ 
+    calculateCardShape: function(cardID) {
+        if(0 < cardID && 36 >= cardID)
+            return 1   
+        else if(36 < cardID  && 72 >= cardID)
+            return 2    
+        else if(72 < cardID && 108 >= cardID)
+            return 3    
+        else if(108 < cardID && 124 >= cardID)
+            return 4     
+        else if(124 < cardID && 136 >= cardID)
+            return 5     
+        else if(136 < cardID && 140 >= cardID)
+            return 6     
+        else if(140 < cardID && 144 >= cardID)
+            return 7     
+        else if(144 < cardID && 152 >= cardID)
+            return 8    
+        else
+            return 0
+    },
+ 
+ 
+    calculateCardValue: function(cardID) {
+        if(0 < cardID && 108 >= cardID)
+            return (cardID - 1) % 9 + 1
+        else if(108 < cardID && 124 >= cardID)
+            return (cardID - 108 - 1) % 4 + 1
+        else if(124 < cardID && 136 >= cardID)
+            return (cardID - 124 - 1) % 3 + 1
+        else if(136 < cardID && 140 >= cardID)
+            return (cardID - 136) 
+        else if(140 < cardID && 144 >= cardID)
+            return (cardID - 140) 
+        else if(144 < cardID && 152 >= cardID)
+            return (cardID - 144)
+        else
+            return 0
+    },
+ 
+    getCardResIndex: function(cardID){
+        var cardShape = this.calculateCardShape(cardID);
+        var cardValue = this.calculateCardValue(cardID);
+        var resIndex = -1
+        if(1 == cardShape)  
+            resIndex = cardValue - 1
+        else if(2 == cardShape)
+            resIndex = 8 + cardValue
+        else if(3 == cardShape)
+            resIndex = 17 + cardValue
+        else if(4 == cardShape)
+            resIndex = 26 + cardValue
+        else if(5 == cardShape)
+            resIndex = 30 + cardValue
+        else if(6 == cardShape)
+            resIndex = 33 + cardValue
+        else if(7 == cardShape)
+            resIndex = 37 + cardValue
+        else if(8 == cardShape)
+            resIndex = 41 + cardValue
+        if(resIndex > 46)
+            resIndex = 46
+             
+        return resIndex
+    },
+   
+ 
  
     freshPlayers: function() {
         for(var i=0; i<common.tableplayers.length; i++) {
@@ -213,22 +323,36 @@ cc.Class({
                          
                         var selfhand = card_layer.getChildByName("hand1");
                         if(selfhand) {
-                            for(var j=0; j<handcards.length; j++) {
+                            for(var j=0; j<=handcards.length; j++) {
                                 var node = selfhand.getChildByName("node"+(j+1).toString());
+                                var cardid = handcards[j];
                                 if(node) {
                                     node.active = true;
 
                                     var node_handcard1 = node.getChildByName("node_handcard1");
                                     if(node_handcard1) {
+                                        node_handcard1.cardid = cardid;
                                         var flower = node_handcard1.getChildByName("flower");
-                                        var back = node_handcard1.getChildByName("back");
+                                        //var back = node_handcard1.getChildByName("back");
                                         var joker = node_handcard1.getChildByName("joker");
                                         var mask = node_handcard1.getChildByName("mask");
 
                                         if(flower) {
                                             //flower.getComponent(cc.Sprite).("Texure/card/flower/0.png");
-                                            var spf = flower.getComponent(cc.Sprite).spriteFrame;
+                                            var spf = flower.getComponent(cc.Sprite);
+                                            var texture = this.getFlowerTexture(cardid);
+                                            //spf.setTexture(texture);
+
+                                            var spriteFrame = new cc.SpriteFrame(texture);
+                                            spf.spriteFrame = spriteFrame
+                                            //spf.spriteFrame =  new cc.SpriteFrame(cc.url.raw('resources/card/flower/20.png'));  
+                                            //var iiii = 0;
                                             //spf.setTexture(this.textureURL); //("res/raw-assets/Texture/card/flower/0.png");
+                                        }
+
+                                        if(joker && mask) {
+                                            joker.active = false;
+                                            mask.active = false;
                                         }
                                     }
                                 }
@@ -237,6 +361,25 @@ cc.Class({
                          
                     }
                 }
+            }
+            else
+            {
+                var handcards = player.handcards;
+                if(handcards && handcards.length > 0) {
+                    var card_layer = this.node.getChildByName("card_layer");
+                    if(card_layer) {
+                        var hand = card_layer.getChildByName("hand"+drawIndex.toString());
+                        if(hand) {
+                            for(var j=0; j<handcards.length; j++) {
+                                var node = hand.getChildByName("node"+(14-j).toString());
+                                if(node) {
+                                    node.active = true;
+                                }
+                            }
+                        }
+                    }    
+                }
+                
             }
 
             var playernode = this.node.getChildByName("player"+drawIndex.toString())

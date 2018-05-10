@@ -14,4 +14,6 @@ module.exports = {
     CMD_ID_JOIN_FKROOM:1002,
     CMD_ID_READY:1003,
     CMD_ID_TABLEINFO:1004,
+
+    CMD_ID_OUTCARD:2000,
 };

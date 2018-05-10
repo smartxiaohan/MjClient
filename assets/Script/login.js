@@ -15,6 +15,11 @@ cc.Class({
             default: null,
             type: cc.EditBox
         },
+
+        testSp: {
+            default: null,
+            type: cc.Sprite
+        },
         // defaults, set visually when attaching this script to the Canvas
         text: 'Hello!'
     },
@@ -40,6 +45,20 @@ cc.Class({
         if(common.socket) {
             common.socket.onmessage = onmessage;
         }
+
+        cc.loader.loadResDir("card", function (err, assets) {
+            self.onLoadComplete(self, assets);
+        });     
+    },
+
+    onLoadComplete: function(self, assets) {
+        console.log("load res complete");
+
+        //var sp = assets[0];
+        //var sp1 = assets[1];
+        var realUrl = cc.url.raw("resources/card/flower/16.png");
+        var texture = cc.textureCache.addImage(realUrl);
+        self.testSp.getComponent(cc.Sprite).spriteFrame.setTexture(texture);
     },
 
     // called every frame
