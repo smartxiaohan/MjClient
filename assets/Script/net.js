@@ -2,8 +2,9 @@ var common = require("./common.js");
 var net = {};
 
 net.connect = function() {
-    var ws = new WebSocket("ws://192.168.0.111:8001");
-
+    //var ws = new WebSocket("ws://192.168.17.8:8001");
+    var ws = new WebSocket("ws://118.187.5.6:8001");
+    //var ws = new WebSocket("ws://127.0.0.1:8001");
     common.socket = ws;
     ws.onopen = function (event) {
         console.log("Send Text WS was opened.");
